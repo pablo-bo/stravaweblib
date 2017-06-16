@@ -186,16 +186,7 @@ class StravaWebClient(object):
                    'interval_type': interval_type,
                    'chart_type': 'miles', 'year_offset': 0}
         r2 = self.strava_session.get(act_int_url, params=payload)
-        # ++++ debug ++++
-        f = open('intervals.txt.html', 'w', encoding='utf8' )
-        f.write(r2.text)
-        f.close()
-        #print(type(r2.text))
         parser = lxml.html.fromstring(r2.text)
-        
-        int_activity = parser.xpath(".//*[@id='interval-value']/text()")
-        debug_print(int_activity)
-        #++++++++++++++++++
         
         ## xpath string for single activity
         ##.//div[substring(@id, 1, 8)='Activity']
