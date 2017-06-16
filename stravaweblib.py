@@ -281,7 +281,21 @@ class StravaWebClient(object):
         responce = self.strava_session.post(kudo_url)
         return responce
     
-
+    def get_activity_photo(self, activity_id):
+        '''
+        return list of dict contained keys 'large', 'thumbnails' urls of foto
+        '''
+        # xpath = .//script[substring(text(),4,29)='function renderInstagram(map)']
+        activity_url = BASE_STRAVA_SITE_URL +'/activities/'+activity_id
+        r = self.strava_session.get(activity_url)
+        parser = lxml.html.fromstring(r.text)
+        xpath = ".//script[substring(text(),4,29)='function renderInstagram(map)']"
+        # TODO need check for right
+        script = extract(parser, xpath)
+        text_script = script.text
+        start = text_script.find('var photosJson = [')# len this string = 18
+        end = text_script.find(']')
+        return json.loads(text_script[start+17:end+1])
     
     def get_activity_data(self, activity_id):
         activity_url = BASE_STRAVA_SITE_URL +'/activities/'+activity_id
