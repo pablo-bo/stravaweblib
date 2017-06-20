@@ -4,5 +4,5 @@ athletes) based on http requests, not Strava Rest API.
 example:  get a list  of the athlete activities or give kudos. This library is designed to solve these issues.
 
 Requirements:
-requests
-lxml
+requests-2.14.2, 
+lxml-3.7.3
