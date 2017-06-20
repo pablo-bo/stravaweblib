@@ -111,25 +111,28 @@ class StravaWebClient(object):
     def get_followers(self, athlethe_id):
         # followers
         result=[]
-        urls = [BASE_STRAVA_SITE_URL+'/athletes/'+athlethe_id+'/follows?type=followers']
-        url_first = urls[0]
-        r = self.strava_session.get(url_first)
+        urls = []
+        start_url = BASE_STRAVA_SITE_URL+'/athletes/'+athlethe_id+'/follows?type=followers'
+        r = self.strava_session.get(start_url)
         parser = lxml.html.fromstring(r.text)
-        #pagination        
-        followers_pages = parser.xpath(".//ul[@class='pagination']/.//li")
-        followers_pages = followers_pages[2:-1]
-        for p in followers_pages:
-            urls.append(BASE_STRAVA_SITE_URL+p[0].get("href"))
-            #print(p.text_content())
-            #print(p[0].get("href"))
+        #pagination
+        followers_pages = parser.xpath(".//ul[@class='pagination']/./li")
+        first_page = 1
+        last_page  = 1
+        # followers_pages - not empty
+        if len(followers_pages)>0:
+            last_page  = int(followers_pages[-2][0].text)
+        # generate page urls    
+        for p in range(first_page, last_page+1):
+            urls.append(BASE_STRAVA_SITE_URL+'/athletes/'+athlethe_id+'/follows?page='+str(p)+'&type=followers')
+        #extract 
         for url in urls:
             r = self.strava_session.get(url)
             parser = lxml.html.fromstring(r.text)
-            following_li = parser.xpath(".//ul[substring(@class, 1, 9)='following']/.//li")
+            following_li = parser.xpath(".//ul[substring(@class, 1, 9)='following']/./li") # bugfix for auth athlethe followers
             for f in following_li:
                 result.append(f.get("data-athlete-id"))
-                #print(f.get("data-athlete-id"))
-        
+                
         return result
 
     def get_last_activities(self, athlethe_id):
