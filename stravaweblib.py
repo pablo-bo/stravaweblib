@@ -88,10 +88,8 @@ class StravaWebClient(object):
         r = self.strava_session.get( BASE_STRAVA_SITE_URL + '/athlete/calendar')
         parser = lxml.html.fromstring(r.text)
         lst_athlethe_name = parser.xpath("//title")
-        
         if len(lst_athlethe_name)>0:
             name = lst_athlethe_name[0].text_content()
-        
         first_name = name.split('|')
         return first_name[1].strip()
     
@@ -115,9 +113,14 @@ class StravaWebClient(object):
         if len(lst_athlethe_name)>0:
             name = lst_athlethe_name[0].text_content()
         first_name = name.split('|')
-            
-        #debug_print(athlethe_name)
-        return first_name[0].strip()
+        athlethe_name=''    
+        if len(first_name)>1 :
+            athlethe_name = first_name[1].strip()
+        else:
+            #FIXME then athlethe_id is owner signed user - in title no name
+            athlethe_name = first_name[0].strip()        
+        
+        return athlethe_name
 
     def get_followers(self, athlethe_id):
         # followers

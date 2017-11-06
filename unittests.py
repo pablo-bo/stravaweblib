@@ -52,17 +52,19 @@ class Strava(unittest.TestCase):
     def test2_my_name(self):
         strava_client = self.strava_client
         # my name
-        name_by_id=strava_client.get_name_athlethe(self.iam_id )
         my_name=strava_client.get_my_name()
         print(my_name+' = Strava Developer', end = " - ")
         self.assertEqual(my_name, 'Strava Developer')
-        self.assertEqual(name_by_id, 'Strava Developer')
+
+        name_by_id=strava_client.get_name_athlethe(self.iam_id )
+        print(name_by_id+' = Strava D.', end = " - ")
+        self.assertEqual(name_by_id, 'Strava D.')
         
     def test3_name_athlethe(self):
         strava_client = self.strava_client
         name=strava_client.get_name_athlethe(self.test_id )
-        print(name+' = Jane Lane', end = " - ")
-        self.assertEqual(name, 'Jane Lane')
+        print(name+' = Jane L.', end = " - ")
+        self.assertEqual(name, 'Jane L.')
         
     def test4_activity_data(self):
         strava_client = self.strava_client        
