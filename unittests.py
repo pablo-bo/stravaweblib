@@ -101,7 +101,7 @@ class Strava(unittest.TestCase):
         #print(original_kudos)
         self.assertEqual(kudos_list, original_kudos)
 
-    def test8_get_activities_by_interval(self):
+    def test8_1_get_activities_by_interval(self):
         strava_client = self.strava_client
         activity_list = strava_client.get_activities_by_interval(self.test_id ,
                                                                  '2016', '03',
@@ -110,6 +110,8 @@ class Strava(unittest.TestCase):
         original_activity_list = ['1000795688', '1000770171']
         self.assertEqual(activity_list, original_activity_list)
 
+
+        
     def test9_get_last_activities(self):
         strava_client = self.strava_client
         activity_list = strava_client.get_last_activities(self.test_id)

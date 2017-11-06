@@ -163,7 +163,7 @@ class StravaWebClient(object):
         debug_print('group '+str(lst_group_activity))
         ## xpath string for group activity for selected athlete
         ##.//li[substring(@id, 1, 8)='Activity']/*[@href="/athletes/athlethe_id"]/..
-        lst_athlethe_act_in_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']/*[@href='/athletes/"+athlethe_id+"']/..")
+        lst_athlethe_act_in_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']//*[@href='/athletes/"+athlethe_id+"' and @class='avatar-content']/../..")
         debug_print('ath in group '+str(lst_athlethe_act_in_group_activity ))
 
         for l in lst_single_activity:
@@ -215,7 +215,8 @@ class StravaWebClient(object):
         debug_print('group '+str(lst_group_activity))
         ## xpath string for group activity for selected athlete
         ##.//li[substring(@id, 1, 8)='Activity']/*[@href="/athletes/athlethe_id"]/..
-        lst_athlethe_act_in_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']/*[@href='/athletes/"+athlethe_id+"']/..")
+        #lst_athlethe_act_in_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']/*[@href='/athletes/"+athlethe_id+"']/..")
+        lst_athlethe_act_in_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']//*[@href='/athletes/"+athlethe_id+"' and @class='avatar-content']/../..")
         debug_print('ath in group '+str(lst_athlethe_act_in_group_activity ))
 
         for l in lst_single_activity:
@@ -229,6 +230,61 @@ class StravaWebClient(object):
             result_lst_act_id.append(act)        
 
         return result_lst_act_id
+
+    def get_activities_by_interval_js(self, athlethe_id, interval_year, interval_num, interval_type):
+    '''
+    Not worked, strava has some js magic, now i dont understand it
+    '''
+        headers_int = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; rv:14.0) Gecko/20100101 Firefox/14.0.1',
+            'Accept': 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
+            'Accept-Language': 'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'DNT': '1',
+            'X-CSRF-Token': self.csrf_token,
+            'Referer': 'https://www.strava.com/athletes/'+str(athlethe_id),
+            'X-Requested-With':'XMLHttpRequest',
+            'Cookie': 'language=en-US; ajs_user_id=19098301;'
+        }
+        self.strava_session.headers = headers_int
+        
+        result_lst_act_id = []
+        act_int_url = BASE_STRAVA_SITE_URL+'/athletes/'+athlethe_id+\
+                      '#interval?interval='+str(interval_year)+str(interval_num)+\
+                      '&interval_type='+interval_type+'&chart_type=miles&year_offset=0'
+        debug_print(act_int_url)
+        payload = {'interval': str(interval_year)+str(interval_num),
+                   'interval_type': interval_type,
+                   'chart_type': 'miles', 'year_offset': 0}
+        r2 = self.strava_session.get(act_int_url, params=payload)
+        parser = lxml.html.fromstring(r2.text)
+        
+        ## xpath string for single activity
+        ##.//div[substring(@id, 1, 8)='Activity']
+        lst_single_activity = parser.xpath(".//div[substring(@id, 1, 8)='Activity']")
+        debug_print('single '+str(lst_single_activity))
+        ## xpath string for group activity
+        ##.//li[substring(@id, 1, 8)='Activity'] // all athlethes in group activity
+        lst_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']")
+        debug_print('group '+str(lst_group_activity))
+        ## xpath string for group activity for selected athlete
+        ##.//li[substring(@id, 1, 8)='Activity']/*[@href="/athletes/athlethe_id"]/..
+        #lst_athlethe_act_in_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']/*[@href='/athletes/"+athlethe_id+"']/..")
+        lst_athlethe_act_in_group_activity = parser.xpath(".//li[substring(@id, 1, 8)='Activity']//*[@href='/athletes/"+athlethe_id+"' and @class='avatar-content']/../..")
+        debug_print('ath in group '+str(lst_athlethe_act_in_group_activity ))
+
+        for l in lst_single_activity:
+            id_act = l.attrib['id']
+            act = id_act.split('-')[1]
+            result_lst_act_id.append(act)
+            
+        for l in lst_athlethe_act_in_group_activity:
+            id_act = l.attrib['id']
+            act = id_act.split('-')[1]
+            result_lst_act_id.append(act)        
+
+        return result_lst_act_id    
         ## END FIND ACTIVITIES ###
 
     def is_kudosable_activity(self, activity_id):
