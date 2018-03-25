@@ -98,8 +98,8 @@ class StravaWebClient(object):
         r = self.strava_session.get( BASE_STRAVA_SITE_URL + '/athlete/calendar')
         parser = lxml.html.fromstring(r.text)
         #xpath = ".//li[@class='drop-down-menu user-menu tap-nav enabled']/a[@class='selection']/@href"
-        #xpath = ".//*[@id='global-nav']/div/ul[2]/li[3]/a[@class='selection']/@href"
-        xpath = ".//*[@id='global-nav']/div[@class='inner-content']/ul[@class='user-nav new-user-nav']/*/a[@class='selection']/@href"
+        xpath = ".//*[@id='global-nav']/div/ul[2]/li[3]/a[@class='selection']/@href"
+        #xpath = ".//*[@id='global-nav']/div[@class='inner-content']/ul[@class='user-nav new-user-nav']/*/a[@class='selection']/@href"
         my_id = extract(parser, xpath)
         my_id = my_id.replace( '/athletes/' , '')
         return my_id
@@ -232,9 +232,9 @@ class StravaWebClient(object):
         return result_lst_act_id
 
     def get_activities_by_interval_js(self, athlethe_id, interval_year, interval_num, interval_type):
-    '''
-    Not worked, strava has some js magic, now i dont understand it
-    '''
+        '''
+        Not worked, strava has some js magic, now i dont understand it
+        '''
         headers_int = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; rv:14.0) Gecko/20100101 Firefox/14.0.1',
             'Accept': 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
