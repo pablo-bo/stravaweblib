@@ -93,15 +93,29 @@ class StravaWebClient(object):
         first_name = name.split('|')
         return first_name[1].strip()
     
-    def get_my_id(self):
+    def get_my_id_old(self):
+        '''
+        for example, not use
+        '''
         my_id=''
         r = self.strava_session.get( BASE_STRAVA_SITE_URL + '/athlete/calendar')
         parser = lxml.html.fromstring(r.text)
         #xpath = ".//li[@class='drop-down-menu user-menu tap-nav enabled']/a[@class='selection']/@href"
-        xpath = ".//*[@id='global-nav']/div/ul[2]/li[3]/a[@class='selection']/@href"
+        #xpath = ".//*[@id='global-nav']/div/ul[2]/li[3]/a[@class='selection']/@href"
         #xpath = ".//*[@id='global-nav']/div[@class='inner-content']/ul[@class='user-nav new-user-nav']/*/a[@class='selection']/@href"
+        #xpath = ".//li[@class='nav-item drop-down-menu user-menu enabled']/a[@class='nav-link selection']/@href"
+        xpath = ".//*[@class='nav-item drop-down-menu user-menu enabled']/a/@href"        
         my_id = extract(parser, xpath)
         my_id = my_id.replace( '/athletes/' , '')
+        return my_id
+    
+    def get_my_id(self):
+        my_id=''
+        r = self.strava_session.get( BASE_STRAVA_SITE_URL + '/athlete/training/log')
+        #redirect to url like  https://www.strava.com/athletes/{id}/training/log
+        url = r.url
+        my_id = url.replace( 'https://www.strava.com/athletes/' , '')
+        my_id = my_id.replace( '/training/log' , '')        
         return my_id
     
     def get_name_athlethe(self, athlethe_id):
@@ -399,7 +413,7 @@ class StravaWebClient(object):
         act_moving_time = extract(parser, xpath)
         
         xpath = ".//*[@id='heading']/div/div/div[2]/div[1]/table/tbody[3]/tr/td/text()"
-        act_elapsed_time = extract(parser, xpath).strip()
+        act_elapsed_time = 'n/a' #extract(parser, xpath).strip()
         # speed
         xpath = ".//*[@id='heading']/div/div/div[2]/div[1]/table/tbody[1]/tr/td[1]/text()"
         act_avg_speed = extract(parser, xpath)
